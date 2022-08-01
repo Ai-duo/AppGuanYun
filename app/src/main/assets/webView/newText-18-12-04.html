@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+        /*
+		@font-face {
+            font-family:Hindi;
+            src: url('file:///android_asset/fonts/JugantorMJ.ttf');
+        }*/
+    </style>
+    <title>SHOW sensorData</title>
+</head>
+<body>
+    <!-- <button onclick="execute(myData,a)" style="position:absolute;left:200px;top:40px;">分页8</button> -->
+    <!-- <button onclick="updateWindDirection(1)" style="position:absolute;left:200px;top:0;">更新风向</button> -->
+    <!-- <button onclick="updateWindSpeed(0.7)" style="position:absolute;left:250px;top:20;">更新风速</button> -->
+    <!-- <button onclick="updateWindSpeed('--')" style="position:absolute;left:300px;top:0;">11风速</button> -->
+    <!-- <button onclick="updateTemperature('--')" style="position:absolute;left:350px;top:0;">温度</button> -->
+    <!-- <button onclick="replay()">从第一页</button> -->
+    <!-- <button onclick="stop()">stop</button> -->
+    
+    <div id="app" style="color:white;"></div>
+    <!-- <button onclick="execute(myData,a)" style="position:absolute;left:200px;top:790px;">更改数据</button> -->
+    <script src="./jquery.js"></script>
+    <!-- <script src="./vue.js"></script> -->
+    <script>
+        
+        
+    var myInterval ='-1';//存放定时翻页
+    var getSdataIntival = '-1';//存放定时获取
+    var currentPage = 0
+    var language = ""
+    var currentP;
+    var myString;//%s 的值
+    var flag=0
+    function getSdata(){
+        var sUrl=window.data.sUrl
+        console.log("调用次数",flag++)
+        $.ajax(sUrl,{
+            type:'GET'
+        }).done(function(result){
+            if(typeof result =='object'){
+                myString = result.data
+            }
+            if(typeof result == 'string'){
+                myString = result                
+            }
+            console.log("成功")
+            Change(window.data)
+        }).fail(function(result){
+            myString = '--'+flag//获取失败了
+            console.log("失败")
+        })
+        Change(window.data)//成功获取数据后，修改视图
+    }
+    window.execute = function (data, sensorData) {
+        if(getSdataIntival!='-1'){clearInterval(getSdataIntival)}//取消interval}
+        console.log("data",data) 
+        window.data = data;
+        console.log("window.data",window.data) 
+        language = window.data.language
+        window.sensorData = sensorData;//调用时保存在本地一份数据，后面修改单独参数时，其他参数不会变
+        myString =''
+        flag=0
+        // console.log("data.sUrl",data.sUrl)
+        // console.log("data.sInterval>0",data.sInterval>0)
+        // console.log("data.sUrl&&data.sInterval>0",data.sUrl&&data.sInterval>0)
+        if(data.sUrl&&data.sInterval>0){
+            getSdata()
+            getSdataIntival=window.setInterval(getSdata,window.data.sInterval*1000)
+            console('getsdata处调用change')
+        }
+        Change(data)//根据传入调用主函数时的数据更改页面
+    }
+    function Change(data) {//依据所传的数据更改页面
+        console.log("change页面收到变化",data)
+        var p = myReplace(data.html)//替换后的文本
+        devidePage(p, data.speed, data.lineHeight, data.width, data.height, data.center)
+    }
+    window.updateTemperature = function (temp) {
+        window.sensorData.t = temp;
+        clearInterval(myInterval);
+        console.log("111")
+        Change(window.data)//传入的是
+    }
+    window.updateHumidity = function (hum) {
+        window.sensorData.h = hum;
+        clearInterval(myInterval);
+        Change(window.data)
+    }
+    window.updateWindSpeed = function (wis) {
+        window.sensorData.ws = wis;
+        clearInterval(myInterval);
+        Change(window.data)
+    }
+    window.updateWindDirection = function (wid) {
+        window.sensorData.wd = wid;
+        clearInterval(myInterval);
+        Change(window.data)
+    }
+    window.updateNoiseSound = function (nos) {
+        window.sensorData.ns = nos;
+        clearInterval(myInterval);
+        Change(window.data)
+    }
+    window.updatePM2 = function (p2) {
+        window.sensorData.pm2 = p2;
+        clearInterval(myInterval);
+        Change(window.data)
+    }
+    window.updatePM10 = function (p10) {
+        window.sensorData.pm10 = p10;
+        clearInterval(myInterval);
+        Change(window.data)
+    }
+    function setBox(lineheight, width, height, center) {
+        
+        // console.log("width",width)
+        // console.log("height",height)
+        document.querySelector("#app").style = "width:" + width + "px;height:" + height + "px;position:relative;"
+        document.querySelector("#app>p").style = "line-height:" + lineheight + ";position:absolute;top:0;left:0;"
+        // $("#app").css({"width":width,"height":height,"position":"relative"})
+        // $("#app>p").css({"line-height": lineheight,"position":"absolute","top":0,"left":0})
+        if (center) {
+            var h = (height - $("#app>p").height()) * 0.5 + 'px'
+            var w = (width - $("#app>p").width()) * 0.5 + 'px'
+            console.log("h:",h,"  w:",w)
+            $("#app>p").css({ "top": h, "left": w })
+        }
+    }
+    function devidePage(p, speed, lineheight, width, height, center) {//分页并显示
+        var pageArray = pages(p)//得到分好页的页码数组
+        console.log('文本里有',pageArray.length,'页')
+        document.querySelector("#app").innerHTML = pageArray[0]
+        console.log("经过1")
+        setBox(lineheight, width, height, center)
+        if(pageArray.length>1){//只有一页时不跳转
+            console.log("经过2")
+            //fanYe(pageArray,lineheight,width,height, center)
+            console.log(pageArray.length)
+            myInterval = window.setInterval(function(){
+                fanYe(pageArray,lineheight,width,height, center)
+            },speed*1000)
+        }
+    }
+    function fanYe(pageArray,lineheight,width,height, center) {
+                    console.log("现在页数为",currentPage)
+                    if (currentPage+1 >= pageArray.length) {
+                        currentPage = -1
+                    }
+                    document.querySelector("#app").innerHTML = pageArray[++currentPage]
+                    console.log(144441,pageArray.length)
+                    console.log(144442,currentPage)
+                    setBox(lineheight, width, height, center)
+                }
+    window.stop = function () {//返回第一页
+        clearInterval(myInterval)
+        
+    }
+    window.replay = function () {//返回第一页
+        console.log('***************************************')
+        clearInterval(myInterval)
+        currentPage = 0;
+        execute(window.data, window.sensorData)
+    }
+    function myReplace(str1) {
+        //替换占位符
+        var ee = str1
+        .replace(/%s/g, (myString !== '') ? myString : '---')
+        .replace(/%T1/g, (window.sensorData.t !== '--') ? ((window.sensorData.t * 1).toFixed(1) + '℃') : ('-- ℃'))
+        .replace(/%T2/g, (window.sensorData.t !== '--') ? ((window.sensorData.t * 1).toFixed(2) + '℃') : ('-- ℃'))
+        .replace(/%T/g, (window.sensorData.t !== '--') ? (window.sensorData.t + '℃') : ('-- ℃'))
+        .replace(/%t1/g, (window.sensorData.t !== '--') ? ((window.sensorData.t * 1.8 + 32).toFixed(1) + '℉') : ('-- ℉'))
+        .replace(/%t2/g, (window.sensorData.t !== '--') ? ((window.sensorData.t * 1.8 + 32).toFixed(2) + '℉') : ('-- ℉'))
+        .replace(/%t/g, (window.sensorData.t !== '--') ? ((window.sensorData.t * 1.8 + 32) + '℉') : ('-- ℉'))
+        .replace(/%c2/g, (window.sensorData.t !== '--') ? ((window.sensorData.t * 1).toFixed(2)) : ('--'))
+        .replace(/%c1/g, (window.sensorData.t !== '--') ? ((window.sensorData.t * 1).toFixed(1)) : ('--'))
+        .replace(/%c/g, (window.sensorData.t !== '--') ? ((window.sensorData.t * 1).toFixed(0)) : ('--'))
+        .replace(/%f2/g, (window.sensorData.t !== '--') ? ((window.sensorData.t * 1.8 + 32).toFixed(2)) : ('--'))
+        .replace(/%f1/g, (window.sensorData.t !== '--') ? ((window.sensorData.t * 1.8 + 32).toFixed(1)) : ('--'))
+        .replace(/%f/g, (window.sensorData.t !== '--') ? ((window.sensorData.t * 1.8 + 32).toFixed(0)) : ('--'))//替换温度
+        .replace(/%RH/g, (window.sensorData.h !== '--') ? (window.sensorData.h + '%') : ('-- %'))
+        .replace(/%h/g, (window.sensorData.h !== '--') ? (window.sensorData.h) : ('--'))
+        .replace(/%h/g, (window.sensorData.h !== '--') ? (window.sensorData.h) : ('--'))
+        .replace(/%ws/g, (window.sensorData.ws !== '--') ? (window.sensorData.ws + 'm/s') : ('-- m/s'))//风速
+        //.replace(/%ws/g, doWindSpeed(window.sensorData.ws))//风速
+        .replace(/%wd/g, doWindDirection(window.sensorData.wd))//风向
+        .replace(/%ns/g, (window.sensorData.ns !== '--') ? (window.sensorData.ns + 'db') : ('-- db'))
+        .replace(/%pm2/g, (window.sensorData.pm2 !== '--') ? (window.sensorData.pm2 + 'μg/m3') : ('-- μg/m3'))
+        .replace(/%pm10/g, (window.sensorData.pm10 !== '--') ? (window.sensorData.pm10 + 'μg/m3') : ('-- μg/m3'))
+        return ee
+        // %RH  表示湿度 %
+        // %h  表示湿度 %
+        // %ws   表示风速m/s
+        // %wd   表示风向
+        // %ns   表示噪音(db)
+        // %pm2  表示PM2.5值 μg/m3
+        // %pm10 表示PM10值 μg/m3
+    }
+    function doWindDirection(d){//处理风向
+        // var language="en"
+        if(d=="--"){
+            return "--"
+        }
+        var windDirectionMap = {
+            "cn": ["东北偏北","东北","东北偏东","正东","东南偏东","东南","东南偏南","正南","西南偏南","西南","西南偏西","正西","西北偏西","西北","西北偏北","正北"],
+            "en": ["north-northeast","northeast","east-northeast","due east","east-southeast","southeast","south-southeast","due south","south-southwest","southwest","west-southwest","due west","west-northwest","north-west","north-northwest","due north"]
+        }
+        return windDirectionMap[language][d]
+    }
+    function doWindSpeed(v){
+        // let level = null;
+        // let language = 'en';
+        var windSpeedMap = {
+            "cn": ["无风","软风","轻风","微风","和风","轻劲风","强风","疾风","大风","烈风","狂风","暴风","台风"],
+            "en": ["Calm","Light Air","Light Breeze","Gentle Breeze","Moderate Breeze","Fresh Breeze","Strong Breeze","Near Gale","Gale","Strong Gale","Storm","Violent Storm","Hurricane"]
+        }
+        if(v=='--'){
+                return '--'
+            }
+            if(v<=0.2){               
+                return windSpeedMap[language][0]
+            }
+            if(v>0.2&&v<=1.5){               
+                return windSpeedMap[language][1]
+            }
+            if(v>1.5&&v<=3.3){               
+                return windSpeedMap[language][2]
+            }
+            if(v>3.3&&v<=5.4){               
+                return windSpeedMap[language][3]
+            }
+            if(v>5.4&&v<=7.9){               
+                return windSpeedMap[language][4]
+            }
+            if(v>7.9&&v<=10.7){               
+                return windSpeedMap[language][5]
+            }
+            if(v>10.7&&v<=13.8){               
+                return windSpeedMap[language][6]
+            }
+            if(v>13.8&&v<=17.1){               
+                return windSpeedMap[language][7]
+            }
+            if(v>17.1&&v<=20.7){               
+                return windSpeedMap[language][8]
+            }
+            if(v>20.7&&v<=24.4){               
+                return windSpeedMap[language][9]
+            }
+            if(v>24.5&&v<=28.4){               
+                return windSpeedMap[language][10]
+            }
+            if(v>28.4&&v<=32.6){               
+                return windSpeedMap[language][11]
+            }
+            if(v>32.6&&v<=36.9){               
+                return windSpeedMap[language][12]
+            }
+            
+    }
+    function pages(paper) {
+        var p = paper
+        var arr = p.match(/<\s*p(\s[^>]*)?>[\s\S]*?<\s*\/p\s*>/g)
+        return arr
+    }
+        // 测试数据
+
+        var myData = {
+            width: 200,
+            height: 40,
+            speed: 2,
+            lineHeight: 1,
+            center: false,
+            language:'en',
+            // html: '<p style="color:green;">111温度：%T1<br/><br/>风向 %wd<br/><br/>风速 %ws<br/><br/>噪音 %ns 你要的数据：%s</p>',
+            sUrl:'',//返回json字符串{data:'123'},
+            sInterval:0,//秒
+            html: '<p style="color:yellow">第1页：<br />温度：%T1</p><p>第2页：<br />内容2</p><p>第3页：<br />内容3</p>'
+        }
+        var ccdata = {
+            "backgroundColor":"rgba(0,0,0,1)",
+            "textAlign":null,
+            "sUrl":"",
+            "html":"<p>\n\t<span  style=\"font-size:18px;\">PAGE1  摄动法发生大幅</span>\n</p>\n<p>\n\t<span  style=\"font-size:18px;\">PAGE2阿斯顿发生的发生大法</span>\n</p>\n<p>\n\t<span  style=\"font-size:18px;\">PAGE3老卡时间的法律就</span>\n</p>",
+            "language":"cn",
+            "lineHeight":1.4,
+            "sInterval":0,
+            "height":314,
+            "speed":4,
+            "center":true,
+            "width":361
+        }
+
+        var a = { 
+            "h": "--", 
+            "ns": "--", 
+            "pm10": "--", 
+            "pm2": "--", 
+            "t": "--", 
+            "wd": "--", 
+            "ws": "--" 
+            }
+        // window.execute(ccdata,a);
+    </script>
+</body>
+<!-- 
+    
+ -->
+
+</html>

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"></head>
+<body style="color:#fff;margin:0; padding:0;width:100%; height:100%">
+<div style="width:100%; height:100%" data-bind="html: html2, style:{'line-height':lineHeight}"></div>
+<script>
+var data;
+var weather;
+window.excute = function (data,weather) {	
+	if(window.excute2)
+		window.excute2(data,weather);
+	else{
+		window.data = data;
+		window.weather = weather
+	}
+}
+</script>
+<script src="require.js"></script>
+<script>
+require(['knockout', 'jquery'], function (ko, $) {	
+	var vm	
+	var assetUrl = 'file:///android_asset/img/';
+	//var assetUrl = 'img/';
+	var map ={
+		'多云':'cloud',
+		'小雨': 'small_rain',
+		'小到中雨':'stom_rain',
+		'阴':'overcast',
+		'晴':'fine',
+		'阵雨':'quick_rain',
+		'雷阵雨':'lquick_rain',
+		'大雨':'big_rain',
+		'中到大雨':'big_rain',
+		'暴雨':'mbig_rain',
+		'大暴雨':'mbig_rain',
+		'特大暴雨':'mbig_rain',
+		'大到暴雨':'mbig_rain',
+		'暴雨到大暴雨':'mbig_rain',
+		'大暴雨到特大暴雨':'mbig_rain',
+		'中雨':'mid_rain',
+		'雷阵雨伴有冰雹':'quick_rain_ice',
+		'雨夹雪':'rain_snow',
+		'阵雪':'quick_snow',
+		'雾':'fog',
+		'沙尘暴':'sand',
+		'浮尘':'sand',
+		'扬沙':'sand',
+		'强沙尘暴':'sand',
+		'雾霾':'sand',
+		'冻雨':'ice_rain',
+		'无天气类型':'unknown'
+	}
+	window.updateWeather = function(weather){
+		vm.weather(makeupWeather(weather));
+	}
+	window.excute2 = function (data, weather) {
+		data.weather = makeupWeather(weather);
+		vm = new Vm(data);
+		ko.applyBindings(vm);
+    }
+	if(window.data)
+		window.excute2(window.data, window.weather);
+	function Vm(data){
+		this.html = ko.observable(data.html);
+		this.weather = ko.observable(data.weather);
+		this.lineHeight = ko.observable(data.lineHeight);
+		this.html2 = ko.computed(function () {
+			var html =this.html();
+			var weather = this.weather();
+			if(weather){
+				return html.replace(/\%\{[\w\d\.-]+\}/g, function(word){
+					var arr = word.replace(/[\%\{\}]/g,'').split('.')
+					var result = weather			
+					arr.forEach(function(val){	
+						console.log(val)
+						if(val.indexOf('img')!=-1){
+							var src = assetUrl + map[result.type]
+							if(val.indexOf('img-')!=-1)
+								src += '.png'		
+							else if(val.indexOf('img2-')!=-1)
+								src += '2.png'	
+							else if(val.indexOf('imgl-')!=-1)
+								src += 'l.png'	
+							var tempA = val.split('-')
+							var width = 32
+							var height = 32
+							if(tempA instanceof Array && tempA.length==3){
+								width = tempA[1]
+								height = tempA[2]
+							}
+							result = '<img src="'+src+'" style="width:'+width+'px;height:'+height+'px">'
+						}else{
+							if(!isNaN(val))
+								val = parseInt(val)
+							result = result[val]
+						}							
+					})
+					return result
+				})
+			}else{
+				var unknown= 'unknown'
+				return html.replace(/\%\{[\w\d\.]+\}/g, function(word){					
+					return unknown
+				})
+			}
+		}, this)		
+	}
+
+	function makeupWeather(weather){
+		if(weather && weather.data && weather.data.forecast instanceof Array){			
+			var forecast = weather.data.arr = weather.data.forecast
+			forecast.forEach(function(item){
+				item.fl = item.fengli
+				item.fx = item.fengxiang
+				var tempArr = item.high.match(/\-?\d+/g)
+				if(tempArr instanceof Array && tempArr.length == 1)
+					item.high = tempArr[0]
+				tempArr = item.low.match(/\-?\d+/g)
+				if(tempArr instanceof Array && tempArr.length == 1)
+					item.low = tempArr[0]				
+			})
+			var item = weather.data.yesterday
+			if(!item)
+				 weather.data.yesterday={high:'No data',low:'No data'}
+			else{
+				var tempArr = item.high.match(/\-?\d+/g)
+				if(tempArr instanceof Array && tempArr.length == 1)
+					item.high = tempArr[0]
+				tempArr = item.low.match(/\-?\d+/g)
+				if(tempArr instanceof Array && tempArr.length == 1)
+					item.low = tempArr[0]	
+			}
+			weather.data.current = weather.data.wendu	
+			var _aqi = weather.data.aqi
+			var level
+			if(_aqi<=50&&_aqi>0) level="优秀";
+	        	 if(_aqi<=100&&_aqi>50) level="良好";
+	        	 if(_aqi<=150&&_aqi>100) level="一般";
+	        	 if(_aqi<=200&&_aqi>150)  level="很差";
+	        	 if(_aqi>200)  level="很差";
+			weather.data.aqi = _aqi ? _aqi+level : '暂缺'
+			return weather.data
+		}
+	}
+	//excute({lineHeight: 2, html: '今天：%{arr.0.date}<br>&nbsp;&nbsp;%{arr.0.img2-32-32}<br>实时温度：%{current}<br>最高:%{arr.0.high} 最低：%{arr.0.low}<br>空气质量：%{aqi}'},{"desc":"OK","status":1000,"data":{"wendu":"25","ganmao":"各项气象条件适宜，无明显降温过程，发生感冒机率较低。","forecast":[{"fengxiang":"无持续风向","fengli":"微风级","high":"高温 26℃","type":"晴","low":"低温 17℃","date":"30日星期四"},{"fengxiang":"东南风","fengli":"微风级","high":"高温 26℃","type":"多云","low":"低温 19℃","date":"1日星期五"},{"fengxiang":"东南风","fengli":"3-4级","high":"高温 25℃","type":"中雨","low":"低温 17℃","date":"2日星期六"},{"fengxiang":"西北风","fengli":"3-4级","high":"高温 22℃","type":"多云","low":"低温 15℃","date":"3日星期天"},{"fengxiang":"无持续风向","fengli":"微风级","high":"高温 25℃","type":"多云","low":"低温 14℃","date":"4日星期一"}],"yesterday":{"fl":"微风","fx":"西北风","high":"高温 22℃","type":"阴","low":"低温 15℃","date":"29日星期三"},"aqi":"77","city":"上海"}});
+});
+</script>
+</body>
+</html>

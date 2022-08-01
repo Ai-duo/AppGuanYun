@@ -1,0 +1,41 @@
+﻿<body style="color:#fff;margin:0; padding:0;" data-bind="style:{width:viewWidth,height:viewHeight}">
+<script>
+var data;
+var t,h;
+window.excute = function (data,t,h) {	
+	if(window.excute2)
+		window.excute2(data,t,h);
+	else{
+		window.data = data;
+		window.t=t;
+		window.h=h;
+	}
+}
+</script>
+<script src="require.js"></script>
+<script>
+require(['knockout', 'jquery', 'multi-line'], function (ko, $, Source) {	
+	var temperature = ko.observable();
+	var humidity = ko.observable();
+	window.updateTemperature = function(num){
+		temperature(num);
+	}
+	window.updateHumidity = function(num){
+		humidity(num);
+	}
+
+	window.excute2 = function (data,t,h) {
+		temperature(t);
+		humidity(h);
+        var vm  = new Source(data,temperature,humidity);
+		vm.viewWidth = data.width+'px';
+		vm.viewHeight = data.height +'px';
+		$('body').append(vm.element);
+		ko.applyBindings(vm);
+    }
+	if(window.data)
+		window.excute2(window.data,window.t,window.h);
+	//excute({width:200,height:40, speed: 10, lineHeight: 1.4, center: true, html: '<p>第1页：<br />内容1</p><p>第2页：<br />内容2</p>'});
+});
+</script>
+</body>

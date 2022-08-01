@@ -1,0 +1,40 @@
+﻿<style>
+	@font-face {
+		font-family: myFont;
+		src: url("./STSONG.TTF")
+	}
+</style>
+
+<body style="color:#fff;margin:0; padding:0;font-family: myFont;"
+	data-bind="style:{width:viewWidth,height:viewHeight}">
+	<script>
+		var data;
+		window.excute = function (data, w, h) {
+			//yzdClient.AndroidLog('dc', 'ending call excute');
+			window.data = data;
+			if(window.excute2){
+				//yzdClient.AndroidLog('dc', '0000 excute2 exist');
+				//yzdClient.AndroidLog('dc', 'to call excute2');
+				window.excute2();
+			}
+		}
+	</script>
+	<script src="require.js"></script>
+	<script>
+		require(['knockout', 'jquery', 'digitalClock'], function (ko, $, Source) {
+			//yzdClient.AndroidLog('dc', 'to define excute2');
+			window.excute2 = function () {
+				//yzdClient.AndroidLog('dc', 'execute excute2');
+				var vm = new Source(window.data);
+				vm.viewWidth = data.width + 'px';
+				vm.viewHeight = data.height + 'px';
+				$('body').append(vm.element);
+				ko.applyBindings(vm);
+			}
+			if (window.data){
+				//yzdClient.AndroidLog('dc', 'ending and to call excute2');
+				window.excute2();
+			}
+		});
+	</script>
+</body>

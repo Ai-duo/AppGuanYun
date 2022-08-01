@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+     <variable
+         name="elements"
+         type="com.test.fiveelement.Elements" />
+        <variable
+            name="face"
+            type="android.graphics.Typeface" />
+    </data>
+
+    <LinearLayout
+        android:background="#000"
+        android:layout_width="320px"
+        android:layout_height="112px"
+        android:orientation="vertical"
+        tools:context=".MainActivity">
+
+       <TextView
+           setFace="@{face}"
+           android:textSize="@dimen/text_size"
+           android:textColor="#f00"
+           android:text="@{elements.allDate}"
+           android:gravity="center"
+           android:layout_weight="1"
+           android:layout_width="match_parent"
+           android:layout_height="0px"/>
+        <LinearLayout
+            android:orientation="horizontal"
+            android:id="@+id/content"
+            android:layout_weight="3"
+            android:layout_width="match_parent"
+            android:layout_height="0px"/>
+    </LinearLayout>
+</layout>

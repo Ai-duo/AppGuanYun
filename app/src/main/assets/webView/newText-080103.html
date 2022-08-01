@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+    <title>Document</title>
+</head>
+<div id="app" style="color:white;">
+    <!-- {{message}} -->
+    <!-- <div id="a"></div> -->
+</div>
+<!-- <button onclick="exceute(dd,a)">222</button> -->
+<!-- <button onclick="replay()">从第一页</button> -->
+
+<body>
+    <script src="./jquery.js"></script>
+    <!-- <script src="./vue.js"></script> -->
+    <script>
+        
+        // 测试数据
+        // var myData = {
+        //     width: 200,
+        //     height: 40,
+        //     speed: 1,
+        //     lineHeight: 1,
+        //     center: false,
+        //     html: '<p style="color:yellow">第1页：<br />温度：%T1</p><p>第2页：<br />内容2</p><p>第3页：<br />内容3</p>'
+        // }
+        // var mySensorData = {
+        //     t: '--',//温度℃或者℉
+        //     h: 2,//湿度%
+        //     ws: 50,//风速单位m/s
+        //     wd: 'E',//风向
+        //     ns: 20,//噪音db
+        //     pm2: 100,//PM2.5值 μg/m³
+        //     pm10: 10,//PM10值 μg/m³
+        // }
+
+        var myInterval;//存放定时翻页
+        var currentPage = 0
+        window.execute = function (data, sensorData) {
+            window.data = data;
+            window.sensorData = sensorData;//调用时保存在本地一份数据，后面修改单独参数时，其他参数不会变
+            Change(data)//根据传入调用主函数时的数据更改页面
+        }
+        function Change(data) {//依据所传的数据更改页面
+            var p = myReplace(data.html)//替换后的文本
+            devidePage(p, data.speed, data.lineHeight, data.width, data.height, data.center)
+        }
+        window.updateTemperature = function (temp) {
+            window.sensorData.t = temp;
+            clearInterval(myInterval);
+            Change(window.data)//传入的是
+        }
+        window.updateHumidity = function (hum) {
+            window.sensorData.h = hum;
+            clearInterval(myInterval);
+            Change(window.data)
+        }
+        window.updateWindSpeed = function (wis) {
+            window.sensorData.ws = wis;
+            clearInterval(myInterval);
+            Change(window.data)
+        }
+        window.updateWindDirection = function (wid) {
+            window.sensorData.wd = wid;
+            clearInterval(myInterval);
+            Change(window.data)
+        }
+        window.updateNoiseSound = function (nos) {
+            window.sensorData.ns = nos;
+            clearInterval(myInterval);
+            Change(window.data)
+        }
+        window.updatePM2 = function (p2) {
+            window.sensorData.pm2 = p2;
+            clearInterval(myInterval);
+            Change(window.data)
+        }
+        window.updatePM10 = function (p10) {
+            window.sensorData.pm10 = p10;
+            clearInterval(myInterval);
+            Change(window.data)
+        }
+        var currentP;
+        function setBox(lineheight, width, height, center) {
+
+            document.querySelector("#app").style = "width:" + width + "px;height:" + height + "px;position:relative;"
+            document.querySelector("#app>p").style = "line-height:" + lineheight + ";position:absolute;top:0;left:0;"
+            if (center) {
+                var h = (height - $("#app>p").height()) * 0.5 + 'px'
+                var w = (width - $("#app>p").width()) * 0.5 + 'px'
+                // console.log($("#app>p").height())
+                $("#app>p").css({ "top": h, "left": w })
+            }
+        }
+
+        function devidePage(p, t, lineheight, width, height, center) {//分页并显示
+            var pagesa = pages(p)//得到分好页的页码数组
+            document.querySelector("#app").innerHTML = pagesa[0]
+            setBox(lineheight, width, height, center)
+            myInterval = setInterval(//定时翻页
+                function () {
+                    document.querySelector("#app").innerHTML = pagesa[currentPage++]
+                    if (currentPage >= pagesa.length) {
+                        currentPage = 0
+                    }
+                    setBox(lineheight, width, height, center)
+                }, t * 1000
+            )
+        }
+        window.replay = function () {//返回第一页
+            clearInterval(myInterval)
+            currentPage = 0;
+            execute(window.data, window.sensorData)
+        }
+        function myReplace(str1) {
+            //替换占位符
+            var ee = str1
+                .replace(/%T1/g, (window.sensorData.t !== '--') ? ((window.sensorData.t * 1).toFixed(1) + '℃') : ('-- ℃'))
+                .replace(/%T2/g, (window.sensorData.t !== '--') ? ((window.sensorData.t * 1).toFixed(2) + '℃') : ('-- ℃'))
+                .replace(/%T/g, (window.sensorData.t !== '--') ? (window.sensorData.t + '℃') : ('-- ℃'))
+                .replace(/%t1/g, (window.sensorData.t !== '--') ? ((window.sensorData.t * 1.8 + 32).toFixed(1) + '℉') : ('-- ℉'))
+                .replace(/%t2/g, (window.sensorData.t !== '--') ? ((window.sensorData.t * 1.8 + 32).toFixed(2) + '℉') : ('-- ℉'))
+                .replace(/%t/g, (window.sensorData.t !== '--') ? ((window.sensorData.t * 1.8 + 32) + '℉') : ('-- ℉'))
+                .replace(/%c2/g, (window.sensorData.t !== '--') ? ((window.sensorData.t * 1).toFixed(2)) : ('--'))
+                .replace(/%c1/g, (window.sensorData.t !== '--') ? ((window.sensorData.t * 1).toFixed(1)) : ('--'))
+                .replace(/%c/g, (window.sensorData.t !== '--') ? ((window.sensorData.t * 1).toFixed(0)) : ('--'))
+                .replace(/%f2/g, (window.sensorData.t !== '--') ? ((window.sensorData.t * 1.8).toFixed(2)) : ('--'))
+                .replace(/%f1/g, (window.sensorData.t !== '--') ? ((window.sensorData.t * 1.8).toFixed(1)) : ('--'))
+                .replace(/%f/g, (window.sensorData.t !== '--') ? ((window.sensorData.t * 1.8).toFixed(0)) : ('--'))//替换温度
+                .replace(/%RH/g, (window.sensorData.h !== '--') ? (window.sensorData.h + '%') : ('-- %'))
+                .replace(/%h/g, (window.sensorData.h !== '--') ? (window.sensorData.h) : ('--'))
+                .replace(/%ws/g, (window.sensorData.ws !== '--') ? (window.sensorData.ws + 'm/s') : ('-- m/s'))
+                .replace(/%wd/g, window.sensorData.wd)
+                .replace(/%ns/g, (window.sensorData.ns !== '--') ? (window.sensorData.ns + 'db') : ('-- db'))
+                .replace(/%pm2/g, (window.sensorData.pm2 !== '--') ? (window.sensorData.pm2 + 'μg/m³') : ('-- μg/m³'))
+                .replace(/%pm10/g, (window.sensorData.pm10 !== '--') ? (window.sensorData.pm10 + 'μg/m³') : ('-- μg/m³'))
+            return ee
+            // %RH  表示湿度 %
+            // %h  表示湿度 %
+            // %ws   表示风速m/s
+            // %wd   表示风向
+            // %ns   表示噪音(db)
+            // %pm2  表示PM2.5值 μg/m³
+            // %pm10 表示PM10值 μg/m³
+        }
+        function pages(paper) {
+            var p = paper
+            var arr = p.match(/<\s*p(\s[^>]*)?>[\s\S]*?<\s*\/p\s*>/g)
+            return arr
+        }
+        // var dd = {            
+        //     "backgroundColor": "rgba(0, 0, 0, 0)",
+        //     "html": "\u003cp\u003e\n\ttemperature:%c℃(%f℉), humidity: %RH%\n\u003c/p\u003e\n\u003cp\u003e\n\twind speed:%ws\u0026nbsp; \u0026nbsp;noise:%ns\n\u003c/p\u003e\n\u003cp\u003e\n\t\u003cbr /\u003e\n\u003c/p\u003e",
+        //     "height": 240, 
+        //     "lineHeight": 1.4, 
+        //     "speed": 10, 
+        //     "center": true, 
+        //     "width": 640
+        // }
+        // var a = { "h": "--", "ns": "--", "pm10": "--", "pm2": "--", "t": "--", "wd": "--", "ws": "--" }
+        // window.execute(myData,a);
+    </script>
+</body>
+<!-- 
+    
+ -->
+
+</html>

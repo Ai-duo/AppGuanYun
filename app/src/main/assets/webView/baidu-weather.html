@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"></head>
+<body style="color:#fff;margin:0; padding:0;width:100%; height:100%">
+<div style="width:100%; height:100%" data-bind="html: html2, style:{'line-height':lineHeight}"></div>
+<script>
+var data;
+var weather;
+window.excute = function (data,weather) {	
+	if(window.excute2)
+		window.excute2(data,weather);
+	else{
+		window.data = data;
+		window.weather = weather
+	}
+}
+</script>
+<script src="require.js"></script>
+<script>
+require(['knockout', 'jquery'], function (ko, $) {	
+	var vm
+	window.updateWeather = function(weather){
+		vm.weather(makeupWeather(weather));
+	}
+	window.excute2 = function (data, weather) {
+		data.weather = makeupWeather(weather);
+		vm = new Vm(data);
+		ko.applyBindings(vm);
+    }
+	if(window.data)
+		window.excute2(window.data, window.weather);
+	function Vm(data){
+		this.html = ko.observable(data.html);
+		this.weather = ko.observable(data.weather);
+		this.lineHeight = ko.observable(data.lineHeight);
+		this.html2 = ko.computed(function () {
+			var html =this.html();
+			var weather = this.weather();
+			if(weather){
+				html = html.replace('%current', weather.current)
+				html = html.replace('%pm25', weather.pm25)
+				return html.replace(/\%\{[\w\d\.]+\}/g, function(word){
+					var arr = word.replace(/[\%\{\}]/g,'').split('.')
+					var result = weather.weather_data					
+					arr.forEach(function(val){
+						if(!isNaN(val))
+							val = parseInt(val)
+						result = result[val]
+					})
+					return result
+				})
+			}else{
+				var unknown= 'unknown'
+				html = html.replace('%current', unknown)
+				html = html.replace('%pm25',unknown)
+				return html.replace(/\%\{[\w\d\.]+\}/g, function(word){					
+					return unknown
+				})
+			}
+		}, this)		
+	}
+	function makeupWeather(weather){
+		if(weather && weather.results instanceof Array && weather.results[0].weather_data instanceof Array){
+			var arr = weather.results[0].weather_data[0].date.match(/\-?\d+/g)
+			if(arr instanceof Array && arr.length == 3){
+				weather.results[0].current = arr[2]			
+			}else{
+				weather.results[0].current = ' '
+			}
+			/*
+			weather.results[0].weather_data.forEach(function(data){
+				var tempArr = data.temperature.match(/\-?\d+/g)
+				if(tempArr instanceof Array && tempArr.length == 2){
+					data.high = tempArr[0]
+					data.low = tempArr[1]
+				}
+			})
+			*/
+			return weather.results[0]
+		}
+	}
+	//excute({lineHeight: 2, html: '今天：%{0.weather}<br>实时温度：%current<br>最高:%{0.high} 最低：%{0.low}<br>%pm25<br>明天：%{1.weather}'},{"error":0,"status":"success","date":"2015-04-21","results":[{"currentCity":"嘉定","pm25":"2","index":[{"title":"穿衣","zs":"较舒适","tipt":"穿衣指数","des":"建议着薄外套、开衫牛仔衫裤等服装。年老体弱者应适当添加衣物，宜着夹克衫、薄毛衣等。"},{"title":"洗车","zs":"较适宜","tipt":"洗车指数","des":"较适宜洗车，未来一天无雨，风力较小，擦洗一新的汽车至少能保持一天。"},{"title":"旅游","zs":"适宜","tipt":"旅游指数","des":"天气较好，温度适宜，是个好天气哦。这样的天气适宜旅游，您可以尽情地享受大自然的风光。"},{"title":"感冒","zs":"较易发","tipt":"感冒指数","des":"天凉，昼夜温差较大，较易发生感冒，请适当增减衣服，体质较弱的朋友请注意适当防护。"},{"title":"运动","zs":"较适宜","tipt":"运动指数","des":"天气较好，无雨水困扰，较适宜进行各种运动，但因气温较低，在户外运动请注意增减衣物。"},{"title":"紫外线强度","zs":"中等","tipt":"紫外线强度指数","des":"属中等强度紫外线辐射天气，外出时建议涂擦SPF高于15、PA+的防晒护肤品，戴帽子、太阳镜。"}],"weather_data":[{"date":"周二 04月21日 (实时：17℃)","dayPictureUrl":"http://api.map.baidu.com/images/weather/day/qing.png","nightPictureUrl":"http://api.map.baidu.com/images/weather/night/qing.png","weather":"晴","wind":"东北风微风","temperature":"20 ~ 9℃"},{"date":"周三","dayPictureUrl":"http://api.map.baidu.com/images/weather/day/qing.png","nightPictureUrl":"http://api.map.baidu.com/images/weather/night/duoyun.png","weather":"晴转多云","wind":"南风微风","temperature":"24 ~ 12℃"},{"date":"周四","dayPictureUrl":"http://api.map.baidu.com/images/weather/day/duoyun.png","nightPictureUrl":"http://api.map.baidu.com/images/weather/night/yin.png","weather":"多云转阴","wind":"东南风微风","temperature":"24 ~ 13℃"},{"date":"周五","dayPictureUrl":"http://api.map.baidu.com/images/weather/day/xiaoyu.png","nightPictureUrl":"http://api.map.baidu.com/images/weather/night/xiaoyu.png","weather":"小雨","wind":"东风微风","temperature":"23 ~ 14℃"}]}]});
+});
+</script>
+</body>
+</html>

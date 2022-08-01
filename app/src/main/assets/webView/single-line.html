@@ -1,0 +1,27 @@
+﻿<body style='color:#fff;margin:0; padding:0;' data-bind="style:{width:viewWidth,height:viewHeight}">
+<script>
+var data;
+window.excute = function (data) {	
+	if(window.excute2)
+		window.excute2(data);
+	else
+		window.data = data;
+}
+</script>
+<script src="require.js"></script>
+<script>
+require(['knockout', 'jquery', 'single-line'], function (ko, $, Source) {
+	window.excute2 = function (data) {	
+        var vm  = new Source(data);
+		vm.viewWidth = data.width+'px';
+		vm.viewHeight = data.height +'px';
+		$('body').append(vm.element);
+		ko.applyBindings(vm);
+    }
+    console.log(999999999)
+	if(window.data)
+		window.excute2(window.data);
+	//excute({width:520,height:48,speed: 20, html: "<span style=\"color:#E53333;\">welcome</span> to use <span style=\"color:#009900;\">web</span> <span style=\"color:#EE33EE;\">information</span><span style=\"color:#4C33E5;\"> publication</span> system"});
+});
+</script>
+</body>

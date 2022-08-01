@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="elements"
+            type="com.test.fiveelement.Elements" />
+        <variable
+            name="face"
+            type="android.graphics.Typeface" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="0px"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                app:setFace="@{face}"
+                android:paddingLeft="10px"
+                android:gravity="center_vertical"
+                android:layout_width="match_parent"
+                android:layout_height="0px"
+                android:layout_weight="1"
+                android:text="@{elements.wd+`℃`}"
+                android:textColor="#f00"
+                android:textSize="@dimen/text_size" />
+
+            <TextView
+                setFace="@{face}"
+                android:paddingLeft="10px"
+                android:gravity="center_vertical"
+                android:layout_width="match_parent"
+                android:layout_height="0px"
+                android:layout_weight="1"
+                android:text="@{elements.sd+`%`}"
+                android:textColor="#f00"
+                android:textSize="@dimen/text_size" />
+
+            <TextView
+                setFace="@{face}"
+                android:paddingLeft="10px"
+                android:gravity="center_vertical"
+                android:layout_width="match_parent"
+                android:layout_height="0px"
+                android:layout_weight="1"
+                android:text="@{elements.fs+`m/s`}"
+                android:textColor="#f00"
+                android:textSize="@dimen/text_size" />
+        </LinearLayout>
+
+        <LinearLayout
+
+            android:layout_width="0px"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:weightSum="3">
+
+            <TextView
+                setFace="@{face}"
+                android:paddingLeft="10px"
+                android:gravity="center_vertical"
+                android:layout_width="match_parent"
+                android:layout_height="0px"
+                android:layout_weight="1"
+                android:text="@{elements.fx}"
+                android:textColor="#f00"
+                android:textSize="@dimen/text_size" />
+
+            <TextView
+                setFace="@{face}"
+                android:paddingLeft="10px"
+                android:gravity="center_vertical"
+                android:layout_width="match_parent"
+                android:layout_height="0px"
+                android:layout_weight="1"
+                android:text="@{elements.qy+`pha`}"
+                android:textColor="#f00"
+                android:textSize="@dimen/text_size" />
+        </LinearLayout>
+    </LinearLayout>
+</layout>

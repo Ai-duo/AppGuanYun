@@ -1,0 +1,76 @@
+﻿<style>
+	@font-face{
+		font-family:myFont;
+		src:url("./DENGL.TTF")
+	}
+.page>p{
+	padding:0;
+	margin:0px;
+	/* margin-top:-3px; */
+}
+</style>
+<body style="color:#fff;margin:0; padding:0;font-family: myFont;" data-bind="style:{width:viewWidth,height:viewHeight}">
+	<!-- <button onclick="replay()">replay -->
+	<!-- <button onclick=pause()>pause -->
+<!-- <body style="color:#fff;margin:0; padding:0;width:100%;height:100%"></body> -->
+<script>
+var data;
+var t,h;
+window.excute = function (data,t,h,w,h) {	
+	if(window.excute2)
+		window.excute2(data,t,h,w,h);
+	else{
+		window.data = data;
+		window.t=t;
+		window.h=h;
+	}
+}
+</script>
+<script src="require.js"></script>
+<script>
+require(['knockout', 'jquery', 'multi-line-v3'], function (ko, $, Source) {	
+	var temperature = ko.observable();
+	var humidity = ko.observable();
+	window.updateTemperature = function(num){
+		temperature(num);
+	}
+	window.updateHumidity = function(num){
+		humidity(num);
+	}
+	window.replay=function(){
+		// console.log("测试一下")
+		// var vm = new Source(window.data , temperature, humidity);
+		// $('body').append(vm.element);
+		// ko.applyBindings(vm);
+		window.temp.clickNext()
+	}
+	window.pause=function(){
+			window.temp.pausePlay()
+	}
+
+	window.excute2 = function (data,t,h,w,h) {
+		temperature(t);
+		humidity(h);
+		var vm  = new Source(data,temperature,humidity,w,h);
+		if(w && h){
+			vm.viewWidth = w + 'px';
+			vm.viewHeight = h + 'px';
+		}else{
+			vm.viewWidth = data.width + 'px';
+			vm.viewHeight = data.height + 'px';
+		}
+		
+		window.temp=vm
+		// $("body").text($("body").width()+"高度"+ $("body").height())
+		$('body').append(vm.element);
+		ko.applyBindings(vm);
+    }
+	if(window.data)
+		window.excute2(window.data,window.t,window.h);
+	// excute({ backgroundColor: 'rgba(184,32,32,1)',width:200,height:80, speed: 10, lineHeight: 1.4, center: true,
+	//  html: '<p>第1页：<br/>内容1</p><p>第2页：<br/>内容2</p>',intervalTime:5},29,84.2);
+	//  excute({ backgroundColor: "rgb(210, 17, 17)",  html: "<p>\n\tFirstPage：<br />\n农历%YL年%ML月%DL<br />\n%MG月%DG日 %H24:%M:%S %W\n</p>\n<p>\n\tSecond Page：<br />\nContentB\n</p>", intervalTime: 2, lineHeight: 1.4, sInterval: 0, height: 320, speed: 32, center: false, width: 600 }, 255, -1);
+	// excute({ "backgroundColor": "rgb(28, 140, 59)", "textAlign": null, "sUrl": "", "html": "<p>\n\tFirst Page：<br />\n农历%YL年%ML月%DL<br />\n%MG月%DG日 %H24:%M:%S %W\n</p>\n<p>\n\tSecond Page：<br />\n的卡拉水晶凤螺空间啊数量大幅拉升阶段阿斯兰多夫接口势垒宽度尖峰岭；啊刷卡叠加法考虑吉萨省觉得反馈量时间啊地方看见啥地方就开始端口连接方式的空间法拉省的空间反馈量杀毒进风口拉萨叠加法考虑\n</p>", "language": "cn", "intervalTime": 5, "lineHeight": 1.4, "sInterval": 0, "height": 320, "speed": 40, "center": false, "width": 264, }, 255, -1,224,80)
+});
+</script>
+</body>

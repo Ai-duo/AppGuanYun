@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">fiveelement</string>
+    <dimen name="text_size">18px</dimen>
+</resources>

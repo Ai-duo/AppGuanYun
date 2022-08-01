@@ -1,0 +1,26 @@
+﻿<body style="color:#fff;margin:0; padding:0;" data-bind="style:{width:viewWidth,height:viewHeight}">
+<script>
+var data;
+window.excute = function (data) {	
+	if(window.excute2)
+		window.excute2(data);
+	else
+		window.data = data;
+}
+</script>
+<script src="require.js"></script>
+<script>
+require(['knockout', 'jquery', 'countdown'], function (ko, $, Source) {	
+	window.excute2 = function (data) {	
+        var vm  = new Source(data);
+		vm.viewWidth = data.width+'px';
+		vm.viewHeight = data.height +'px';
+		$('body').append(vm.element);
+		ko.applyBindings(vm);
+    }
+	if(window.data)
+		window.excute2(window.data);
+	//excute({width:1024,height:308, lineHeight: 1.4, time:'2014-5-1 10:30', html: '距离某某开幕还有<br />%d天%h时%m分%s秒<br />'});
+});
+</script>
+</body>

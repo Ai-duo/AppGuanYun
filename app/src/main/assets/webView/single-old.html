@@ -1,0 +1,18 @@
+﻿<body style="color:#fff;margin:0; padding:0;">
+<div id="wrap" style="width:10000000px; position: absolute;"></div>
+<script src="jquery.js"></script>
+<script>
+$(function(){
+	window.getWidth = function (data) {	
+		var temp = data.html;
+		temp = temp.replace(/<p>|<\/p>/g, '');
+		temp = '<span>' + temp + '</span>';
+		var content = $(temp).css('font-size', data.height+'px');
+		$('#wrap').append(content);
+		var width = content.width();
+		window.xy.onReturnWidth(width);
+	}
+	window.xy.onWebReady();
+});
+</script>
+</body>

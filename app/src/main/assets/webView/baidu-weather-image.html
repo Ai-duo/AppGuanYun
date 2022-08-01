@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"></head>
+<body style="margin:0; padding:0;width:100%; height:100%">
+<img id="test">
+<script>
+var preUrl ='http://api.map.baidu.com/images/weather';
+var assetUrl = 'file:///android_asset/weather_image';
+var weather;
+var day = 0;
+var img = document.getElementById('test')
+function changeSrc(){
+	var w = window.weather
+	if(w && w.results){
+		var date = new Date()
+		var weather_data = w.results[0].weather_data[day]
+		if(date.getHours()>=18){
+			//晚上
+			img.src= weather_data.nightPictureUrl.replace(preUrl,assetUrl)
+		}else{
+			img.src= weather_data.dayPictureUrl.replace(preUrl,assetUrl)
+		}
+	}		
+}
+setInterval(changeSrc, 60*1000)
+window.updateWeather = function(weather){
+	window.weather = weather
+	changeSrc()
+}
+window.excute = function (data, weather) {			
+	img.style.width = data.width+'px'
+	img.style.height = data.height+'px'
+	window.day = data.day
+	updateWeather(weather)	
+}
+
+//	excute({day: 0,width:200,height:300},{"error":0,"status":"success","date":"2015-04-21","results":[{"currentCity":"嘉定","pm25":"2","index":[{"title":"穿衣","zs":"较舒适","tipt":"穿衣指数","des":"建议着薄外套、开衫牛仔衫裤等服装。年老体弱者应适当添加衣物，宜着夹克衫、薄毛衣等。"},{"title":"洗车","zs":"较适宜","tipt":"洗车指数","des":"较适宜洗车，未来一天无雨，风力较小，擦洗一新的汽车至少能保持一天。"},{"title":"旅游","zs":"适宜","tipt":"旅游指数","des":"天气较好，温度适宜，是个好天气哦。这样的天气适宜旅游，您可以尽情地享受大自然的风光。"},{"title":"感冒","zs":"较易发","tipt":"感冒指数","des":"天凉，昼夜温差较大，较易发生感冒，请适当增减衣服，体质较弱的朋友请注意适当防护。"},{"title":"运动","zs":"较适宜","tipt":"运动指数","des":"天气较好，无雨水困扰，较适宜进行各种运动，但因气温较低，在户外运动请注意增减衣物。"},{"title":"紫外线强度","zs":"中等","tipt":"紫外线强度指数","des":"属中等强度紫外线辐射天气，外出时建议涂擦SPF高于15、PA+的防晒护肤品，戴帽子、太阳镜。"}],"weather_data":[{"date":"周二 04月21日 (实时：17℃)","dayPictureUrl":"http://api.map.baidu.com/images/weather/day/qing.png","nightPictureUrl":"http://api.map.baidu.com/images/weather/night/qing.png","weather":"晴","wind":"东北风微风","temperature":"20 ~ 9℃"},{"date":"周三","dayPictureUrl":"http://api.map.baidu.com/images/weather/day/qing.png","nightPictureUrl":"http://api.map.baidu.com/images/weather/night/duoyun.png","weather":"晴转多云","wind":"南风微风","temperature":"24 ~ 12℃"},{"date":"周四","dayPictureUrl":"http://api.map.baidu.com/images/weather/day/duoyun.png","nightPictureUrl":"http://api.map.baidu.com/images/weather/night/yin.png","weather":"多云转阴","wind":"东南风微风","temperature":"24 ~ 13℃"},{"date":"周五","dayPictureUrl":"http://api.map.baidu.com/images/weather/day/xiaoyu.png","nightPictureUrl":"http://api.map.baidu.com/images/weather/night/xiaoyu.png","weather":"小雨","wind":"东风微风","temperature":"23 ~ 14℃"}]}]});
+
+</script>
+</body>
+</html>

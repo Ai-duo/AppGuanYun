@@ -1,0 +1,29 @@
+﻿<body style="color:#fff;margin:0; padding:0;">
+<div id="wrap" style="width:10000000px; position: absolute;"></div>
+<script src="jquery.js"></script>
+<script>
+$(function(){
+	window.getWidth = function (data) {	
+		//fix bug lineHeight
+		if(!data.lineHeight)
+			data.lineHeight = 1;
+		var temp = data.html;
+		console.log(3232323232,temp,data);
+		temp = temp.replace(/<p>|<\/p>/g, '');
+		temp = '<span>' + temp + '</span>';
+		var fontSize = data.height / data.lineHeight;		
+		var content = $(temp).css({
+			'font-size': fontSize+'px',
+			'line-height': data.lineHeight
+		});
+		//var content = $(temp).css('font-size', data.height+'px');
+
+		$('#wrap').append(content);
+
+		var width = content.width();
+		window.xy.onReturnWidth(width);
+	}
+	window.xy.onWebReady();
+});
+</script>
+</body>
