@@ -1,5 +1,6 @@
 package com.test.fiveelement;
 
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ViewDataBinding;
@@ -30,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
     ServiceConnection connection;
     ActivityMainBinding mainBinding;
     ElementFragment ef;
-    TextFragment tf;
+    TextFragment tf,tf1,tf2;
     Typeface face;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,8 +59,16 @@ public class MainActivity extends AppCompatActivity {
         EventBus.getDefault().register(this);
         ef = new ElementFragment();
         tf = new TextFragment();
+        tf1 = new TextFragment();
+        tf2 = new TextFragment();
         mainBinding.setFace(face);
         ef.setFace(face);
+        tf.setFace(face);
+        tf1.setFace(face);
+        tf2.setFace(face);
+        tf.setIndex(0);
+        tf1.setIndex(1);
+        tf2.setIndex(2);
         changFragments();
     }
     private Timer timer;
@@ -69,16 +78,26 @@ public class MainActivity extends AppCompatActivity {
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                if(i>=20000) {
+                if(i>=40000) {
                     i = 0;
                 }
                 FragmentManager fm = getSupportFragmentManager();
                 FragmentTransaction ft = fm.beginTransaction();
-                if(i%2==0){
+                switch (i%4){
+                    case 0:
                     ft.replace(R.id.content,ef);
-                }else{
-                    ft.replace(R.id.content,tf);
+                    break;
+                    case 1:
+                        ft.replace(R.id.content,tf);
+                        break;
+                    case 2:
+                        ft.replace(R.id.content,tf1);
+                        break;
+                    case 3:
+                        ft.replace(R.id.content,tf2);
+                        break;
                 }
+
                 ft.commit();
                 i++;
             }

@@ -12,7 +12,7 @@
        <TextView
            android:background="#000"
            android:gravity="center"
-           android:textSize="21px"
+           android:textSize="17px"
            android:text="重科学、听官宣\n不信谣、不造谣"
            android:textColor="#f00"
            android:layout_width="match_parent"
