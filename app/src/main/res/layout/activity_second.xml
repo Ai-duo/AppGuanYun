@@ -5,16 +5,18 @@
 
 
     <LinearLayout
+        android:background="#f00"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal">
 
        <TextView
-           android:background="#000"
+
+            android:id="@+id/textview"
            android:gravity="center"
-           android:textSize="17px"
-           android:text="重科学、听官宣\n不信谣、不造谣"
-           android:textColor="#f00"
+           android:textSize="20sp"
+           android:text="新时代的伟大成就就是党和人民\n一道拼出来、干出来、奋斗出来的！"
+           android:textColor="#ff0"
            android:layout_width="match_parent"
            android:layout_height="match_parent"/>
     </LinearLayout>

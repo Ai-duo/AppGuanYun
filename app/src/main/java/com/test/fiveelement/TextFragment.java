@@ -31,7 +31,7 @@ public class TextFragment extends Fragment {
         if(binding==null) {
             binding = DataBindingUtil.inflate(inflater, R.layout.activity_second, container, false);
             binding.textview.setTypeface(face);
-            binding.textview.setText(text[index]);
+          //  binding.textview.setText(text[index]);
         }
 
 
